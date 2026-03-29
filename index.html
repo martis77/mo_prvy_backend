@@ -1,26 +1,39 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <title>Môj prvý Fullstack</title>
+    <title>Moji Študenti</title>
     <style>
-        .student-card {
-            border: 2px solid #333;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px;
-            display: inline-block;
-            text-align: center;
-            background-color: #f9f9f9;
-        }
-        img { border-radius: 50%; border: 2px solid #000; }
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; }
+        #container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
+        .card { background: white; padding: 15px; border-radius: 10px; width: 150px; shadow: 0 4px 8px rgba(0,0,0,0.1); border: 1px solid #ddd; }
+        img { width: 100px; height: 100px; border-radius: 50%; background: #eee; }
     </style>
 </head>
 <body>
-    <h1>Zoznam študentov z môjho API</h1>
-    <div id="studenti-container">
-        </div>
+    <h1>Môj prvý Backend Projekt 🚀</h1>
+    <div id="container">Načítavam študentov z Pythonu...</div>
 
-    <script src="script.js"></script>
+    <script>
+        // Tento kód je teraz priamo v HTML, aby sme vylúčili chybu v prepojení
+        fetch("http://127.0.0.1:5000/api")
+            .then(res => res.json())
+            .then(data => {
+                const cont = document.getElementById("container");
+                cont.innerHTML = "";
+                data.forEach(s => {
+                    cont.innerHTML += `
+                        <div class="card">
+                            <img src="${s.image}">
+                            <h4>${s.name}</h4>
+                            <p>@${s.nickname}</p>
+                        </div>
+                    `;
+                });
+            })
+            .catch(err => {
+                document.getElementById("container").innerHTML = "CHYBA: Zapni Python server (py app.py)!";
+            });
+    </script>
 </body>
 </html>
