@@ -2,44 +2,36 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-# CORS povolí tvojmu JavaScriptu sťahovať dáta z tohto backendu
+# CORS povolí tvojmu index.html sťahovať tieto dáta
 CORS(app)
 
-# Databáza študentov (zoznam slovníkov)
+# Databáza študentov s profi Unsplash fotkami (vysoká kvalita, žiadny cringe)
 students_db = [
-    {"id": 1, "name": "Marcus", "surname": "Martis", "nickname": "maro", "image": "https://i.pravatar.cc/150?img=1"},
-    {"id": 2, "name": "Adrian", "surname": "Cervenka", "nickname": "adi", "image": "https://i.pravatar.cc/150?img=2"},
-    {"id": 3, "name": "Peter", "surname": "Novak", "nickname": "peto", "image": "https://i.pravatar.cc/150?img=3"},
-    {"id": 4, "name": "Jana", "surname": "Kovacova", "nickname": "jani", "image": "https://i.pravatar.cc/150?img=4"},
-    {"id": 5, "name": "Tomas", "surname": "Hrasko", "nickname": "tomi", "image": "https://i.pravatar.cc/150?img=5"},
-    {"id": 6, "name": "Eva", "surname": "Biela", "nickname": "evka", "image": "https://i.pravatar.cc/150?img=6"},
-    {"id": 7, "name": "Marek", "surname": "Urban", "nickname": "marek", "image": "https://i.pravatar.cc/150?img=7"},
-    {"id": 10, "name": "Nina", "surname": "Polakova", "nickname": "nina", "image": "https://i.pravatar.cc/150?img=10"},
-    {"id": 8, "name": "Simona", "surname": "Zelena", "nickname": "simi", "image": "https://i.pravatar.cc/150?img=8"},
-    {"id": 9, "name": "David", "surname": "Toth", "nickname": "davo", "image": "https://i.pravatar.cc/150?img=9"}
+    {"id": 1, "name": "Marcus", "surname": "Martis", "nickname": "maro", "image": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop"},
+    {"id": 2, "name": "Adrian", "surname": "Cervenka", "nickname": "adi", "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"},
+    {"id": 3, "name": "Peter", "surname": "Novak", "nickname": "peto", "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"},
+    {"id": 4, "name": "Jana", "surname": "Kovacova", "nickname": "jani", "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"},
+    {"id": 5, "name": "Tomas", "surname": "Hrasko", "nickname": "tomi", "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop"},
+    {"id": 6, "name": "Eva", "surname": "Biela", "nickname": "evka", "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"},
+    {"id": 7, "name": "Marek", "surname": "Urban", "nickname": "marek", "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop"},
+    {"id": 8, "name": "Simona", "surname": "Zelena", "nickname": "simi", "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop"},
+    {"id": 9, "name": "David", "surname": "Toth", "nickname": "davo", "image": "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=400&h=400&fit=crop"},
+    {"id": 10, "name": "Nina", "surname": "Polakova", "nickname": "nina", "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop"}
 ]
 
-# 1. Route - Hlavná stránka
 @app.route("/")
-def index():
-    return "Vitaj! Môj Flask backend funguje správne. Pre zoznam študentov choď na /api"
+def home():
+    return "Backend beží! Dáta sú na /api"
 
-# 2. Route - Všetci študenti (JSON pole)
 @app.route("/api")
-def get_all_students():
+def get_students():
     return jsonify(students_db)
 
-# 3. Route - Jeden študent podľa ID
-@app.route("/api/student/<int:student_id>")
-def get_one_student(student_id):
-    # Vyhľadá študenta v zozname podľa id
-    student = next((s for s in students_db if s["id"] == student_id), None)
-    
-    if student:
-        return jsonify(student)
-    else:
-        return jsonify({"error": "Študent s týmto ID neexistuje"}), 404
+@app.route("/api/student/<int:sid>")
+def get_student(sid):
+    s = next((x for x in students_db if x["id"] == sid), None)
+    return jsonify(s) if s else (jsonify({"error": "Nenájdený"}), 404)
 
 if __name__ == "__main__":
-    # Spustenie servera na tvojom počítači
+    # Spustenie na localhost:5000
     app.run(debug=True)
