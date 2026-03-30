@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
@@ -15,8 +15,8 @@
     <div id="container">Načítavam študentov z Pythonu...</div>
 
     <script>
-        // Tento kód je teraz priamo v HTML, aby sme vylúčili chybu v prepojení
-        fetch("http://127.0.0.1:5000/api")
+        
+        fetch("data.json") // Zmeň na "http://
             .then(res => res.json())
             .then(data => {
                 const cont = document.getElementById("container");
@@ -37,3 +37,4 @@
     </script>
 </body>
 </html>
+
