@@ -1,7 +1,9 @@
+const API_URL = "http://127.0.0.1:5000";
+
 // =========================
-// ŠTUDENTI (tvoje pôvodné)
+// ŠTUDENTI
 // =========================
-fetch("http://127.0.0.1:5000/api")
+fetch(`${API_URL}/api`)
     .then(response => response.json())
     .then(data => {
         const container = document.getElementById("studenti-container");
@@ -20,7 +22,7 @@ fetch("http://127.0.0.1:5000/api")
             card.style.boxShadow = "2px 2px 10px rgba(0,0,0,0.1)";
 
             card.innerHTML = `
-                <img src="${student.image}" alt="${student.name}" 
+                <img src="${student.image}" 
                      style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px;">
                 <h3>${student.name} ${student.surname}</h3>
                 <p>Prezývka: <b>${student.nickname}</b></p>
@@ -44,19 +46,16 @@ async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
-    // zobraz user správu
     chatBox.innerHTML += `<div><b>Ty:</b> ${text}</div>`;
-
     messages.push({ role: "user", content: text });
 
     input.value = "";
 
-    // loading efekt
     chatBox.innerHTML += `<div id="loading">AI píše...</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
-        const res = await fetch("http://127.0.0.1:5000/chat", {
+        const res = await fetch(`${API_URL}/chat`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -66,12 +65,9 @@ async function sendMessage() {
 
         const data = await res.json();
 
-        // odstráni loading
         document.getElementById("loading").remove();
 
-        // zobraz odpoveď
         chatBox.innerHTML += `<div><b>AI:</b> ${data.reply}</div>`;
-
         messages.push({ role: "assistant", content: data.reply });
 
         chatBox.scrollTop = chatBox.scrollHeight;
