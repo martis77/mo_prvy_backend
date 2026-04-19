@@ -1,11 +1,18 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-# CORS povolí tvojmu index.html sťahovať tieto dáta
 CORS(app)
 
-# Databáza študentov s profi Unsplash fotkami (vysoká kvalita, žiadny cringe)
+# OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Databáza študentov
 students_db = [
     {"id": 1, "name": "Marcus", "surname": "Martis", "nickname": "maro", "image": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop"},
     {"id": 2, "name": "Adrian", "surname": "Cervenka", "nickname": "adi", "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"},
@@ -19,9 +26,13 @@ students_db = [
     {"id": 10, "name": "Nina", "surname": "Polakova", "nickname": "nina", "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop"}
 ]
 
+# ------------------------
+# EXISTUJÚCE API
+# ------------------------
+
 @app.route("/")
 def home():
-    return "Backend beží! Dáta sú na /api"
+    return "Backend beží! Použi /api alebo /chat"
 
 @app.route("/api")
 def get_students():
@@ -32,6 +43,51 @@ def get_student(sid):
     s = next((x for x in students_db if x["id"] == sid), None)
     return jsonify(s) if s else (jsonify({"error": "Nenájdený"}), 404)
 
+# ------------------------
+# AI CHATBOT
+# ------------------------
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.json
+    messages = data.get("messages", [])
+
+    # Prevod DB na text pre AI
+    students_info = "\n".join([
+        f"{s['id']}: {s['name']} {s['surname']} (prezývka: {s['nickname']})"
+        for s in students_db
+    ])
+
+    system_prompt = f"""
+Si školský AI chatbot.
+
+Máš databázu študentov:
+{students_info}
+
+Pravidlá:
+- odpovedaj stručne
+- ak sa pýtajú na študentov, použi tieto dáta
+- ak niečo nevieš, povedz to normálne
+- odpovedaj po slovensky
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4.1",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                *messages
+            ]
+        )
+
+        return jsonify({
+            "reply": response.choices[0].message.content
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ------------------------
+
 if __name__ == "__main__":
-    # Spustenie na localhost:5000
     app.run(debug=True)
