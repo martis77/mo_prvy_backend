@@ -9,10 +9,8 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Databáza študentov
 students_db = [
     {"id": 1, "name": "Marcus", "surname": "Martis", "nickname": "maro", "image": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop"},
     {"id": 2, "name": "Adrian", "surname": "Cervenka", "nickname": "adi", "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"},
@@ -26,13 +24,9 @@ students_db = [
     {"id": 10, "name": "Nina", "surname": "Polakova", "nickname": "nina", "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop"}
 ]
 
-# ------------------------
-# EXISTUJÚCE API
-# ------------------------
-
 @app.route("/")
 def home():
-    return "Backend beží! Použi /api alebo /chat"
+    return "Backend beží!"
 
 @app.route("/api")
 def get_students():
@@ -43,32 +37,23 @@ def get_student(sid):
     s = next((x for x in students_db if x["id"] == sid), None)
     return jsonify(s) if s else (jsonify({"error": "Nenájdený"}), 404)
 
-# ------------------------
-# AI CHATBOT
-# ------------------------
-
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
     messages = data.get("messages", [])
 
-    # Prevod DB na text pre AI
     students_info = "\n".join([
-        f"{s['id']}: {s['name']} {s['surname']} (prezývka: {s['nickname']})"
+        f"{s['id']}: {s['name']} {s['surname']} ({s['nickname']})"
         for s in students_db
     ])
 
     system_prompt = f"""
 Si školský AI chatbot.
 
-Máš databázu študentov:
+Študenti:
 {students_info}
 
-Pravidlá:
-- odpovedaj stručne
-- ak sa pýtajú na študentov, použi tieto dáta
-- ak niečo nevieš, povedz to normálne
-- odpovedaj po slovensky
+Odpovedaj stručne po slovensky.
 """
 
     try:
@@ -87,7 +72,11 @@ Pravidlá:
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# ------------------------
+# 🔥 DÔLEŽITÉ PRE DEPLOY
 # ------------------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
