@@ -42,6 +42,9 @@ def chat():
     data = request.json
     messages = data.get("messages", [])
 
+    if not messages:
+        return jsonify({"reply": "Napíš správu 🙂"})
+
     students_info = "\n".join([
         f"{s['id']}: {s['name']} {s['surname']} ({s['nickname']})"
         for s in students_db
@@ -58,7 +61,7 @@ Odpovedaj stručne po slovensky.
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4.1",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
                 *messages
@@ -72,10 +75,6 @@ Odpovedaj stručne po slovensky.
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-# ------------------------
-# 🔥 DÔLEŽITÉ PRE DEPLOY
-# ------------------------
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
