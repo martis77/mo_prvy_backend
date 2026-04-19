@@ -3,14 +3,3 @@ flask-cors==6.0.0
 gunicorn==21.2.0
 openai
 python-dotenv
-
-requests==2.32.5
-urllib3==2.6.3
-Werkzeug==3.1.6
-Jinja2==3.1.6
-itsdangerous==2.2.0
-click==8.3.1
-MarkupSafe==3.0.3
-certifi==2026.1.4
-charset-normalizer==3.4.4
-idna==3.11
