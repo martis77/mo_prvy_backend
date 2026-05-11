@@ -3,6 +3,9 @@ const API_URL = "https://moj-prvy-backend-4.onrender.com";
 // =========================
 // ŠTUDENTI
 // =========================
+
+let selectedStudent = null;
+
 fetch(`${API_URL}/api`)
     .then(response => response.json())
     .then(data => {
@@ -20,13 +23,26 @@ fetch(`${API_URL}/api`)
             card.style.textAlign = "center";
             card.style.width = "180px";
             card.style.boxShadow = "2px 2px 10px rgba(0,0,0,0.1)";
+            card.style.cursor = "pointer";
 
             card.innerHTML = `
-                <img src="${student.image}" 
-                     style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px;">
                 <h3>${student.name} ${student.surname}</h3>
                 <p>Prezývka: <b>${student.nickname}</b></p>
             `;
+
+            // klik na študenta
+            card.onclick = () => {
+                selectedStudent = student;
+
+                // highlight
+                document.querySelectorAll(".selected").forEach(el => {
+                    el.classList.remove("selected");
+                    el.style.background = "white";
+                });
+
+                card.classList.add("selected");
+                card.style.background = "#dff0ff";
+            };
 
             container.appendChild(card);
         });
@@ -34,7 +50,7 @@ fetch(`${API_URL}/api`)
 
 
 // =========================
-// AI CHATBOT
+// CHAT
 // =========================
 
 let messages = [];
@@ -46,7 +62,7 @@ async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
-    chatBox.innerHTML += `<div><b>AI:</b> ${data.reply ?? "Žiadna odpoveď"}</div>`;
+    chatBox.innerHTML += `<div><b>Ty:</b> ${text}</div>`;
     messages.push({ role: "user", content: text });
 
     input.value = "";
@@ -60,20 +76,23 @@ async function sendMessage() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ messages })
+            body: JSON.stringify({
+                messages,
+                student: selectedStudent
+            })
         });
 
         const data = await res.json();
 
-        document.getElementById("loading").remove();
+        document.getElementById("loading")?.remove();
 
-        chatBox.innerHTML += `<div><b>AI:</b> ${data.reply}</div>`;
+        chatBox.innerHTML += `<div><b>AI:</b> ${data.reply ?? "Žiadna odpoveď"}</div>`;
         messages.push({ role: "assistant", content: data.reply });
 
         chatBox.scrollTop = chatBox.scrollHeight;
 
     } catch (err) {
-        document.getElementById("loading").remove();
+        document.getElementById("loading")?.remove();
         chatBox.innerHTML += `<div style="color:red;">Chyba: backend nebeží</div>`;
     }
 }
