@@ -1,4 +1,4 @@
-const API_URL = "https://student-ai-backend.onrender.com";
+const API_URL = "https://moj-prvy-backend-4.onrender.com";
 
 // =========================
 // ŠTUDENTI
