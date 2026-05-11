@@ -46,7 +46,7 @@ async function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
 
-    chatBox.innerHTML += `<div><b>Ty:</b> ${text}</div>`;
+    chatBox.innerHTML += `<div><b>AI:</b> ${data.reply ?? "Žiadna odpoveď"}</div>`;
     messages.push({ role: "user", content: text });
 
     input.value = "";
