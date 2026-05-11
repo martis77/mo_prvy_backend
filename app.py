@@ -12,16 +12,16 @@ CORS(app)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 students_db = [
-    {"id": 1, "name": "Marcus", "surname": "Martis", "nickname": "maro", "image": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop"},
-    {"id": 2, "name": "Adrian", "surname": "Cervenka", "nickname": "adi", "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"},
-    {"id": 3, "name": "Peter", "surname": "Novak", "nickname": "peto", "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"},
-    {"id": 4, "name": "Jana", "surname": "Kovacova", "nickname": "jani", "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"},
-    {"id": 5, "name": "Tomas", "surname": "Hrasko", "nickname": "tomi", "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop"},
-    {"id": 6, "name": "Eva", "surname": "Biela", "nickname": "evka", "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"},
-    {"id": 7, "name": "Marek", "surname": "Urban", "nickname": "marek", "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop"},
-    {"id": 8, "name": "Simona", "surname": "Zelena", "nickname": "simi", "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop"},
-    {"id": 9, "name": "David", "surname": "Toth", "nickname": "davo", "image": "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=400&h=400&fit=crop"},
-    {"id": 10, "name": "Nina", "surname": "Polakova", "nickname": "nina", "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop"}
+    {"id": 1, "name": "Marcus", "surname": "Martis", "nickname": "maro"},
+    {"id": 2, "name": "Adrian", "surname": "Cervenka", "nickname": "adi"},
+    {"id": 3, "name": "Peter", "surname": "Novak", "nickname": "peto"},
+    {"id": 4, "name": "Jana", "surname": "Kovacova", "nickname": "jani"},
+    {"id": 5, "name": "Tomas", "surname": "Hrasko", "nickname": "tomi"},
+    {"id": 6, "name": "Eva", "surname": "Biela", "nickname": "evka"},
+    {"id": 7, "name": "Marek", "surname": "Urban", "nickname": "marek"},
+    {"id": 8, "name": "Simona", "surname": "Zelena", "nickname": "simi"},
+    {"id": 9, "name": "David", "surname": "Toth", "nickname": "davo"},
+    {"id": 10, "name": "Nina", "surname": "Polakova", "nickname": "nina"}
 ]
 
 @app.route("/")
@@ -32,18 +32,18 @@ def home():
 def get_students():
     return jsonify(students_db)
 
-@app.route("/api/student/<int:sid>")
-def get_student(sid):
-    s = next((x for x in students_db if x["id"] == sid), None)
-    return jsonify(s) if s else (jsonify({"error": "Nenájdený"}), 404)
-
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
     messages = data.get("messages", [])
+    student = data.get("student")
 
     if not messages:
         return jsonify({"reply": "Napíš správu 🙂"})
+
+    student_text = ""
+    if student:
+        student_text = f"Aktuálne pracuješ so študentom: {student.get('name')} {student.get('surname')} ({student.get('nickname')})"
 
     students_info = "\n".join([
         f"{s['id']}: {s['name']} {s['surname']} ({s['nickname']})"
@@ -53,7 +53,9 @@ def chat():
     system_prompt = f"""
 Si školský AI chatbot.
 
-Študenti:
+{student_text}
+
+Zoznam študentov:
 {students_info}
 
 Odpovedaj stručne po slovensky.
@@ -73,13 +75,9 @@ Odpovedaj stručne po slovensky.
         })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"reply": f"Chyba: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-@app.route("/health")
-def health():
-    return {"status": "ok"}
