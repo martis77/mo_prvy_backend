@@ -1,13 +1,14 @@
 const API_URL = "https://moj-prvy-backend-4.onrender.com";
 
+let selectedStudent = null;
+let messages = [];
+
 // =========================
 // ŠTUDENTI
 // =========================
 
-let selectedStudent = null;
-
 fetch(`${API_URL}/api`)
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
         const container = document.getElementById("studenti-container");
         container.innerHTML = "";
@@ -15,45 +16,37 @@ fetch(`${API_URL}/api`)
         data.forEach(student => {
             const card = document.createElement("div");
 
-            card.style.border = "2px solid #ddd";
-            card.style.borderRadius = "15px";
-            card.style.padding = "15px";
-            card.style.margin = "10px";
-            card.style.display = "inline-block";
-            card.style.textAlign = "center";
-            card.style.width = "180px";
-            card.style.boxShadow = "2px 2px 10px rgba(0,0,0,0.1)";
-            card.style.cursor = "pointer";
-
             card.innerHTML = `
                 <h3>${student.name} ${student.surname}</h3>
-                <p>Prezývka: <b>${student.nickname}</b></p>
+                <p>${student.nickname}</p>
             `;
 
-            // klik na študenta
-            card.onclick = () => {
+            card.style.border = "2px solid #ccc";
+            card.style.padding = "10px";
+            card.style.margin = "10px";
+            card.style.cursor = "pointer";
+            card.style.borderRadius = "10px";
+            card.style.display = "inline-block";
+
+            // ⭐ DÔLEŽITÉ - klik musí byť tu
+            card.addEventListener("click", () => {
                 selectedStudent = student;
 
-                // highlight
-                document.querySelectorAll(".selected").forEach(el => {
-                    el.classList.remove("selected");
-                    el.style.background = "white";
-                });
+                console.log("Vybraný študent:", selectedStudent);
 
-                card.classList.add("selected");
-                card.style.background = "#dff0ff";
-            };
+                document.querySelectorAll("#studenti-container div")
+                    .forEach(el => el.style.background = "white");
+
+                card.style.background = "#d0ebff";
+            });
 
             container.appendChild(card);
         });
     });
 
-
 // =========================
 // CHAT
 // =========================
-
-let messages = [];
 
 async function sendMessage() {
     const input = document.getElementById("chat-input");
@@ -63,19 +56,15 @@ async function sendMessage() {
     if (!text) return;
 
     chatBox.innerHTML += `<div><b>Ty:</b> ${text}</div>`;
+
     messages.push({ role: "user", content: text });
 
     input.value = "";
 
-    chatBox.innerHTML += `<div id="loading">AI píše...</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-
     try {
         const res = await fetch(`${API_URL}/chat`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 messages,
                 student: selectedStudent
@@ -84,15 +73,13 @@ async function sendMessage() {
 
         const data = await res.json();
 
-        document.getElementById("loading")?.remove();
+        console.log("Backend response:", data);
 
-        chatBox.innerHTML += `<div><b>AI:</b> ${data.reply ?? "Žiadna odpoveď"}</div>`;
+        chatBox.innerHTML += `<div><b>AI:</b> ${data.reply || "Žiadna odpoveď"}</div>`;
         messages.push({ role: "assistant", content: data.reply });
 
-        chatBox.scrollTop = chatBox.scrollHeight;
-
     } catch (err) {
-        document.getElementById("loading")?.remove();
-        chatBox.innerHTML += `<div style="color:red;">Chyba: backend nebeží</div>`;
+        chatBox.innerHTML += `<div style="color:red;">Chyba servera</div>`;
+        console.error(err);
     }
 }
