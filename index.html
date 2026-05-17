@@ -23,8 +23,9 @@
             background: white;
             padding: 15px;
             border-radius: 10px;
-            width: 150px;
+            width: 180px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
         }
 
         img {
@@ -53,6 +54,11 @@
             padding: 10px 15px;
             cursor: pointer;
         }
+
+        select {
+            padding: 8px;
+            margin: 10px;
+        }
     </style>
 </head>
 
@@ -61,6 +67,14 @@
     <h1>AI Chatbot + Študenti 🤖</h1>
 
     <h2>Študenti</h2>
+
+    <!-- SORTING BONUS -->
+    <select id="sortSelect">
+        <option value="name_asc">Meno A-Z</option>
+        <option value="age_asc">Vek ↑ (najmladší)</option>
+        <option value="age_desc">Vek ↓ (najstarší)</option>
+    </select>
+
     <div id="studenti-container">Načítavam...</div>
 
     <h2>Chat</h2>
@@ -70,7 +84,6 @@
     <input id="chat-input" placeholder="Napíš správu...">
     <button onclick="sendMessage()">Odoslať</button>
 
-    <!-- NAPOJENIE NA TVOJ SCRIPT -->
     <script src="script.js"></script>
 
 </body>
