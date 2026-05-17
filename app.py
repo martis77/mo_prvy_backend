@@ -11,7 +11,14 @@ CORS(app)
 students_db = [
     {"id": 1, "name": "Peter", "surname": "Novak", "nickname": "Peto", "age": 22},
     {"id": 2, "name": "Anna", "surname": "Kovacova", "nickname": "Anka", "age": 19},
-    {"id": 3, "name": "Martin", "surname": "Mrkvicka", "nickname": "Majo", "age": 25}
+    {"id": 3, "name": "Martin", "surname": "Mrkvicka", "nickname": "Majo", "age": 25},
+    {"id": 4, "name": "Jana", "surname": "Horvathova", "nickname": "Jani", "age": 21},
+    {"id": 5, "name": "Tomáš", "surname": "Bielik", "nickname": "Tomy", "age": 24},
+    {"id": 6, "name": "Lucia", "surname": "Kralova", "nickname": "Lulu", "age": 20},
+    {"id": 7, "name": "Filip", "surname": "Varga", "nickname": "Fifo", "age": 23},
+    {"id": 8, "name": "Sofia", "surname": "Nemcova", "nickname": "Sofi", "age": 18},
+    {"id": 9, "name": "Dominik", "surname": "Toth", "nickname": "Domi", "age": 26},
+    {"id": 10, "name": "Ema", "surname": "Kovacikova", "nickname": "Emka", "age": 19}
 ]
 
 
