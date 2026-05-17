@@ -11,12 +11,12 @@ CORS(app)
 students_db = [
     {"id": 1, "name": "Peter", "surname": "Novak", "nickname": "Peto", "age": 22},
     {"id": 2, "name": "Anna", "surname": "Kovacova", "nickname": "Anka", "age": 19},
-    {"id": 3, "name": "Martin", "surname": "Mrkvicka", "nickname": "Majo", "age": 25},
+    {"id": 3, "name": "Martin", "surname": "Mrkvicka", "nickname": "Majo", "age": 25}
 ]
 
 
 # =========================
-# VLASTNÝ SORT (BUBBLE SORT)
+# VLASTNÝ SORT ALGORITMUS (BUBBLE SORT)
 # =========================
 
 def sort_students(students, sort_type):
@@ -31,12 +31,15 @@ def sort_students(students, sort_type):
 
             swap = False
 
+            # ===== NAME A-Z =====
             if sort_type == "name_asc":
                 swap = a["name"].lower() > b["name"].lower()
 
+            # ===== AGE ASC (najmladší) =====
             elif sort_type == "age_asc":
                 swap = a["age"] > b["age"]
 
+            # ===== AGE DESC (najstarší) =====
             elif sort_type == "age_desc":
                 swap = a["age"] < b["age"]
 
@@ -47,7 +50,7 @@ def sort_students(students, sort_type):
 
 
 # =========================
-# API - ŠTUDENTI
+# API ENDPOINT
 # =========================
 
 @app.route("/api", methods=["GET"])
@@ -61,7 +64,7 @@ def get_students():
 
 
 # =========================
-# CHAT (NECHÁME BEZ ZMENY LOGIKY)
+# CHAT (ak ho používaš)
 # =========================
 
 @app.route("/chat", methods=["POST"])
@@ -79,24 +82,8 @@ def chat():
     else:
         student_text = "Žiadny študent nebol vybraný"
 
-    students_info = "\n".join([
-        f"{s['id']}: {s['name']} {s['surname']} ({s['nickname']})"
-        for s in students_db
-    ])
-
-    system_prompt = f"""
-Si školský AI chatbot.
-
-Vybraný študent: {student_text}
-
-Zoznam študentov:
-{students_info}
-
-Odpovedaj stručne po slovensky.
-"""
-
     return jsonify({
-        "reply": "OK (chat zostáva rovnaký – sem máš svoj OpenAI kód)"
+        "reply": f"Chat funguje. Vybraný študent: {student_text}"
     })
 
 
