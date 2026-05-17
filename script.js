@@ -1,4 +1,4 @@
-const API_URL = "https://moj-prvy-backend-4.onrender.com";
+const API_URL = "https://moj-prvy-backend-1.onrender.com";
 
 let selectedStudent = null;
 let messages = [];
